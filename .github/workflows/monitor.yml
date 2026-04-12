@@ -1,0 +1,51 @@
+name: Package Monitor
+
+on:
+  schedule:
+    - cron: '50 * * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    name: Monitor Package
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Prepare workspace
+        run: |
+          mkdir monitor-env && cd monitor-env
+          npm init -y
+
+      - name: Install celo-pixels-sdk from registry
+        working-directory: monitor-env
+        run: npm install celo-pixels-sdk
+        continue-on-error: true
+
+      - name: Verify module loads
+        working-directory: monitor-env
+        run: |
+          node -e "
+            const sdk = require('celo-pixels-sdk');
+            console.log('Load status: OK');
+            console.log('Typeof:', typeof sdk);
+            const keys = Object.keys(sdk);
+            console.log('Exports:', keys.length);
+            keys.forEach(k => console.log('  -', k));
+          "
+        continue-on-error: true
+
+      - name: Query registry info
+        run: |
+          npm view celo-pixels-sdk version
+          npm view celo-pixels-sdk dist-tags
+        continue-on-error: true
+
+      - name: Verify no missing deps
+        working-directory: monitor-env
+        run: npm ls
+        continue-on-error: true
