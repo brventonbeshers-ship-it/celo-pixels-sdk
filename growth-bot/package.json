@@ -1,0 +1,14 @@
+{
+  "name": "celo-pixels-sdk-growth-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Install and smoke-check celo-pixels-sdk",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "celo-pixels-sdk": "latest"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
