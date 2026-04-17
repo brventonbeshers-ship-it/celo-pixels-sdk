@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '25 */7 * * *'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Verify celo-pixels-sdk from npm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Prepare clean environment
+        run: mkdir -p /tmp/celo-pixels-sdk-check
+
+      - name: Initialize project
+        working-directory: /tmp/celo-pixels-sdk-check
+        run: npm init -y
+
+      - name: Install celo-pixels-sdk from registry
+        working-directory: /tmp/celo-pixels-sdk-check
+        run: npm install celo-pixels-sdk
+
+      - name: Verify module loads
+        working-directory: /tmp/celo-pixels-sdk-check
+        run: node -e "const sdk = require('celo-pixels-sdk'); console.log('celo-pixels-sdk OK, exports:', Object.keys(sdk));"
+
+      - name: Show dependency tree
+        working-directory: /tmp/celo-pixels-sdk-check
+        run: npm ls --all
